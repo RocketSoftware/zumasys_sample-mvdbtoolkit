@@ -1,0 +1,27 @@
+* First build us a object to build our options
+
+CALL WOBJ(OBJ,"FROMSTRING","","{}","",RERR)
+
+* Set Method
+CALL WOBJ(OBJ,"SET","method","GET","",RERR)
+
+* Set URL
+CALL WOBJ(OBJ,"SET","url","https://postman-echo.com/get?foo1=bar1&foo2=bar2","",RERR)
+
+* Make the call
+CALL MVDBTOOLKIT.WCALL(OBJ)
+
+* Get the response
+
+CALL WOBJ(OBJ,"GET","response.status",RESPONSE.STATUS,"",RERR)
+CALL WOBJ(OBJ,"GET","response.statusmsg",RESPONSE.STATUS.MSG,"",RERR)
+
+CALL WOBJ(OBJ,"GET","response.curl_cmnd",CURL.CMND,"",RERR)
+
+PRINT CURL.CMND
+
+PRINT "STATUS: ":RESPONSE.STATUS,RESPONSE.STATUS.MSG
+
+CALL WOBJ(OBJ,"GET","response.result",RESPONSE.RESULT,"",RERR)
+DEBUG
+PRINT RESPONSE.RESULT
