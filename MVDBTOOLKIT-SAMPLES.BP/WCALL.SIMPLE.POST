@@ -1,0 +1,50 @@
+* First build us a object to build our options
+
+CALL WOBJ(OBJ,"FROMSTRING","","{}","",RERR)
+
+* Set Method
+
+CALL WOBJ(OBJ,"SET","method","POST","",RERR)
+
+* Set URL
+
+CALL WOBJ(OBJ,"SET","url","https://postman-echo.com/post","",RERR)
+
+* Lets send some JSON
+
+CALL WOBJ(BOBJ,"FROMSTRING","","{}","",RERR)
+CALL WOBJ(BOBJ,"SET","field","value","",RERR)
+CALL WOBJ(BOBJ,"TOSTRING","",BJSON,"",RERR)
+
+CALL WOBJ(OBJ,"SET","body",BJSON,"",RERR)
+
+* Need to set our content type to application/json
+
+CALL WOBJ(OBJ,"SET.OBJECT","headers","{}","",RERR); * create headers object
+CALL WOBJ(OBJ,"SET","headers.content-type","application/json","",RERR)
+
+* Make the call
+
+CALL MVDBTOOLKIT.WCALL(OBJ)
+
+* Get the response
+
+CALL WOBJ(OBJ,"GET","response.status",RESPONSE.STATUS,"",RERR)
+CALL WOBJ(OBJ,"GET","response.statusmsg",RESPONSE.STATUS.MSG,"",RERR)
+
+PRINT "STATUS: ":RESPONSE.STATUS,RESPONSE.STATUS.MSG
+
+CALL WOBJ(OBJ,"GET","response.data",RESPONSE.RESULT,"",RERR)
+
+* LETS MAKE IT MORE READABLE
+
+CALL WOBJ(RESPONSEOBJ,"FROMSTRING","",RESPONSE.RESULT,"",RERR)
+CALL WOBJ(RESPONSEOBJ,"TOSTRING","",RESPONSE.JSON,"PRETTIFY",RERR)
+
+CONVERT CHAR(13) TO CHAR(254) IN RESPONSE.JSON
+CONVERT CHAR(10) TO '' IN RESPONSE.JSON
+
+NUM.LINES=DCOUNT(RESPONSE.JSON,CHAR(254))
+FOR X=1 TO NUM.LINES
+    PRINT RESPONSE.JSON<X>
+NEXT X

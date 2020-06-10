@@ -8,6 +8,11 @@ CALL WOBJ(OBJ,"SET","method","GET","",RERR)
 * Set URL
 CALL WOBJ(OBJ,"SET","url","https://postman-echo.com/get?foo1=bar1&foo2=bar2","",RERR)
 
+* Show the actual config object we have created, helps with debugging.
+
+CALL WOBJ(OBJ,"TOSTRING","",TOBJ,"PRETTIFY",RERR)
+PRINT TOBJ
+
 * Make the call
 CALL MVDBTOOLKIT.WCALL(OBJ)
 
@@ -16,12 +21,17 @@ CALL MVDBTOOLKIT.WCALL(OBJ)
 CALL WOBJ(OBJ,"GET","response.status",RESPONSE.STATUS,"",RERR)
 CALL WOBJ(OBJ,"GET","response.statusmsg",RESPONSE.STATUS.MSG,"",RERR)
 
+* Show the actual Curl command
+
 CALL WOBJ(OBJ,"GET","response.curl_cmnd",CURL.CMND,"",RERR)
 
 PRINT CURL.CMND
 
 PRINT "STATUS: ":RESPONSE.STATUS,RESPONSE.STATUS.MSG
 
-CALL WOBJ(OBJ,"GET","response.result",RESPONSE.RESULT,"",RERR)
-DEBUG
-PRINT RESPONSE.RESULT
+CALL WOBJ(OBJ,"LENGTH","response.log",LOG.LENGTH,"",RERR)
+
+FOR X=1 TO LOG.LENGTH
+    CALL WOBJ(OBJ,"GET","response.log[":X-1:"]",LOG.LINE,"",RERR)
+    PRINT LOG.LINE
+NEXT X
